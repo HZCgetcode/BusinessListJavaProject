@@ -1,0 +1,96 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+    defaultConfig {
+        applicationId "cn.com.hzc.businesslistproject"
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // 这里可以用做使用命令行打包，不过这里暂时没有使用
+    signingConfigs {
+        config {
+            storeFile file('./../businesslistproject.jks')
+            storePassword "111"
+            keyAlias "UI样式集合"
+            keyPassword "111"
+            v2SigningEnabled false
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.config
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.config
+        }
+    }
+
+    // flavorDimensions：主要作用于版本差异化打包
+    flavorDimensions "versionCode"
+    productFlavors {
+        dev {
+            dimension "versionCode"
+            applicationId 'cn.com.hzc.businesslistproject.debug'
+            manifestPlaceholders = [
+                    app_name: "UI样式集合dev",
+                    app_icon: "@mipmap/app_launcher",
+            ]
+        }
+
+        check {
+            dimension "versionCode"
+            applicationId 'cn.com.hzc.businesslistproject.check'
+            manifestPlaceholders = [
+                    app_name: "UI样式集合check",
+                    app_icon: "@mipmap/app_launcher",
+            ]
+        }
+
+        pro {
+            dimension "versionCode"
+            applicationId 'cn.com.hzc.businesslistproject'
+            manifestPlaceholders = [
+                    app_name: "@string/app_name",
+                    app_icon: "@mipmap/app_launcher",
+            ]
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // 启用DataBinding
+    dataBinding {
+        enabled = true
+    }
+
+    // 新版本的打包方式，并根据版本名称进行区分
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "app_version_${variant.versionName}.apk"
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.13'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+}
